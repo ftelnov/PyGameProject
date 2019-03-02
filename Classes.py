@@ -60,7 +60,7 @@ class Player(pygame.sprite.Sprite):
         if self.onEarth:
             self.stateOfJump = 0
         else:
-            if self.stateOfJump <= 8:
+            if 0 < self.stateOfJump <= 8:
                 self.rect.y -= self.jumpSpeed
                 for tile in self.warning_group:
                     if pygame.sprite.collide_rect(self, tile):

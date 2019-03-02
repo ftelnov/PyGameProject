@@ -13,4 +13,14 @@ tile_width = tile_height = 50
 
 SIZE = WIDTH, HEIGHT = 812, 469
 
+KEYS = {
+    97: 'left',
+    119: 'up',
+    32: 'up',
+    115: 'down',
+    100: 'right',
+}
+
+ADDHEIGHT = 250
+
 FPS = 60

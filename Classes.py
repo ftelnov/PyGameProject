@@ -31,9 +31,9 @@ class Tile(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_group, all_sprites, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
-        self.image = player_image  # изображение игрока
+        self.image = player_images['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 5)
+            tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 3)
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
@@ -83,12 +83,16 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.movement[direction] = not self.movement[direction]
         if self.movement['left']:
+            if self.image != player_images['stay-left']:
+                self.image = player_images['stay-left']
             self.rect.x -= self.speed
             for tile in self.warning_group:
                 if pygame.sprite.collide_rect(self, tile):
                     self.rect.x += self.speed
                     break
         if self.movement['right']:
+            if self.image != player_images['stay-right']:
+                self.image = player_images['stay-right']
             self.rect.x += self.speed
             for tile in self.warning_group:
                 if pygame.sprite.collide_rect(self, tile):
@@ -99,14 +103,6 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.collide_rect(self, tile):
                 self.rect.y -= self.fallSpeed
                 break
-        if self.rect.y < 0:
-            self.rect.y = self.fieldGeometry[1] - 15
-        if self.rect.y > self.fieldGeometry[1]:
-            self.rect.y = 15
-        if self.rect.x > self.fieldGeometry[0] - 15:
-            self.rect.x = 15
-        if self.rect.x < 0:
-            self.rect.x = self.fieldGeometry[0] - 15
         events.clear()
 
     def set_field_geometry(self, geometry):

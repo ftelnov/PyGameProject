@@ -20,6 +20,6 @@ KEYS = {
     100: 'right',
 }
 
-ADDHEIGHT = 250
+ADDHEIGHT = 200
 
 FPS = 60

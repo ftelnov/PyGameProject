@@ -37,10 +37,10 @@ class Player(pygame.sprite.Sprite):
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
-        self.speed = 10  # Константная скорость перемещения(влево/вправо)
+        self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
         self.jumpSpeed = 20  # Высота прыжка
-        self.fallSpeed = 5  # Скорость паденя
+        self.fallSpeed = 4  # Скорость паденя
         self.stateOfJump = 0  # Фазы прыжка
 
         self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе

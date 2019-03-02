@@ -38,8 +38,11 @@ class Player(pygame.sprite.Sprite):
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
         self.speed = 10  # Константная скорость перемещения(влево/вправо)
-        self.jumpSpeed = 160  # Высота прыжка
+
+        self.jumpSpeed = 20  # Высота прыжка
         self.fallSpeed = 5  # Скорость паденя
+        self.stateOfJump = 0  # Фазы прыжка
+
         self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе
         self.movement = {
             'left': False,
@@ -54,6 +57,16 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y -= self.fallSpeed
                 self.onEarth = True
                 break
+        if self.onEarth:
+            self.stateOfJump = 0
+        else:
+            if self.stateOfJump <= 8:
+                self.rect.y -= self.jumpSpeed
+                for tile in self.warning_group:
+                    if pygame.sprite.collide_rect(self, tile):
+                        self.rect.y += self.jumpSpeed
+                        break
+                self.stateOfJump += 1
         for event in events:
             try:
                 direction = KEYS[event.key]
@@ -62,6 +75,7 @@ class Player(pygame.sprite.Sprite):
             if direction == 'up':
                 if event.type != pygame.KEYUP and self.onEarth:
                     self.rect.y -= self.jumpSpeed
+                    self.stateOfJump = 1
                     for tile in self.warning_group:
                         if pygame.sprite.collide_rect(self, tile):
                             self.rect.y += self.jumpSpeed

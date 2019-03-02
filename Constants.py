@@ -4,6 +4,7 @@ FON = pygame.image.load('data/fon.png')
 
 tile_images = {
     'upper-block': pygame.image.load('data/block-main.png'),
+    'empty-block': pygame.image.load('data/block-empty.png'),
 }
 
 player_image = pygame.image.load('data/player.png')

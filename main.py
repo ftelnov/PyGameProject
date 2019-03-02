@@ -1,6 +1,7 @@
 import pygame
 import sys
 from Constants import *
+from MainFunctions import *
 
 pygame.init()
 
@@ -11,6 +12,7 @@ running = True
 screen = pygame.display.set_mode(SIZE)
 pygame.display.flip()
 clock = pygame.time.Clock()
+level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites)
 
 
 def terminate():

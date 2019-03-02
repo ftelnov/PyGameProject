@@ -42,7 +42,7 @@ while running:
             terminate()
         if event.type == pygame.KEYDOWN:
             continue
-    screen.fill(pygame.Color('black'))
+    screen.blit(FON, (0, 0))
     all_sprites.draw(screen)
     tiles_group.draw(screen)
     pygame.display.flip()

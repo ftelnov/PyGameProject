@@ -20,6 +20,7 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 Tile(tiles_group, all_sprites, 'upper-block', x, y)
             elif level[y][x] == '@':
                 Tile(tiles_group, all_sprites, 'empty-block', x, y)
-                new_player = Player(player_group, tiles_group, all_sprites, x, y)
+                new_player = Player(player_group, all_sprites, x, y)
     # вернем игрока, а также размер поля в клетках
+    new_player.set_warning_group(tiles_group)
     return new_player, x, y

@@ -14,7 +14,7 @@ pygame.display.flip()
 clock = pygame.time.Clock()
 level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites)
 mainPlayer = level[0]
-mainPlayer.setFieldGeometry(SIZE)
+mainPlayer.set_field_geometry(SIZE)
 
 
 def terminate():
@@ -43,10 +43,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
             events.append(event)
     screen.blit(FON, (0, 0))
-    player_group.update(events, tiles_group)
+    player_group.update(events)
     all_sprites.draw(screen)
     tiles_group.draw(screen)
     pygame.display.flip()

@@ -37,27 +37,37 @@ class Player(pygame.sprite.Sprite):
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
-        self.speed = 10  # Константная скорость
+        self.speed = 10  # Константная скорость перемещения(влево/вправо)
+        self.jumpSpeed = 160  # Высота прыжка
+        self.fallSpeed = 5  # Скорость паденя
+        self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе
         self.movement = {
             'left': False,
             'right': False,
-            'down': False,
-            'up': False
         }  # индикатор движения
 
     def update(self, events):
+        self.onEarth = False
+        self.rect.y += self.fallSpeed
+        for tile in self.warning_group:
+            if pygame.sprite.collide_rect(self, tile):
+                self.rect.y -= self.fallSpeed
+                self.onEarth = True
+                break
         for event in events:
             try:
                 direction = KEYS[event.key]
             except KeyError:
                 continue
-            self.movement[direction] = not self.movement[direction]
-        if self.movement['up']:
-            self.rect.y -= self.speed
-            for tile in self.warning_group:
-                if pygame.sprite.collide_rect(self, tile):
-                    self.rect.y += self.speed
-                    break
+            if direction == 'up':
+                if event.type != pygame.KEYUP and self.onEarth:
+                    self.rect.y -= self.jumpSpeed
+                    for tile in self.warning_group:
+                        if pygame.sprite.collide_rect(self, tile):
+                            self.rect.y += self.jumpSpeed
+                            break
+            else:
+                self.movement[direction] = not self.movement[direction]
         if self.movement['left']:
             self.rect.x -= self.speed
             for tile in self.warning_group:
@@ -70,12 +80,11 @@ class Player(pygame.sprite.Sprite):
                 if pygame.sprite.collide_rect(self, tile):
                     self.rect.x -= self.speed
                     break
-        if self.movement['down']:
-            self.rect.y += self.speed
-            for tile in self.warning_group:
-                if pygame.sprite.collide_rect(self, tile):
-                    self.rect.y -= self.speed
-                    break
+        self.rect.y += self.fallSpeed
+        for tile in self.warning_group:
+            if pygame.sprite.collide_rect(self, tile):
+                self.rect.y -= self.fallSpeed
+                break
         if self.rect.y < 0:
             self.rect.y = self.fieldGeometry[1] - 15
         if self.rect.y > self.fieldGeometry[1]:

@@ -1,0 +1,5 @@
+How to read'n'create your own levels:
+! - dangerous block(triangular)
+# - wall(not dangerous)
+@ - Main Player
+. - Empty block

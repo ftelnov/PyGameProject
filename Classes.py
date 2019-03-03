@@ -42,6 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.jumpSpeed = 20  # Высота прыжка
         self.fallSpeed = 4  # Скорость паденя
         self.stateOfJump = 0  # Фазы прыжка
+        self.stateOfWalkLeft = False  # Фазы хотьбы влево
+        self.stateOfWalkRight = False  # Фазы хотьбы вправо
+        self.lastMove = 'right'  # сторона, в которую игрок в последний раз шагал
 
         self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе
         self.movement = {
@@ -51,12 +54,16 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, events):
         self.onEarth = False
+
+        #  Моделька находится в постоянном падении
         self.rect.y += self.fallSpeed
         for tile in self.warning_group:
             if pygame.sprite.collide_rect(self, tile):
                 self.rect.y -= self.fallSpeed
                 self.onEarth = True
                 break
+
+        #  Проверяем, на земле ли персонаж
         if self.onEarth:
             self.stateOfJump = 0
         else:
@@ -67,6 +74,8 @@ class Player(pygame.sprite.Sprite):
                         self.rect.y += self.jumpSpeed
                         break
                 self.stateOfJump += 1
+
+        # проходимся по событиям
         for event in events:
             try:
                 direction = KEYS[event.key]
@@ -82,22 +91,39 @@ class Player(pygame.sprite.Sprite):
                             break
             else:
                 self.movement[direction] = not self.movement[direction]
+        #  логика движения влево
         if self.movement['left']:
-            if self.image != player_images['stay-left']:
-                self.image = player_images['stay-left']
+            #  свитчим по стадии хотьбы
+            if self.stateOfWalkLeft:
+                self.image = player_images['go-left-1']
+            else:
+                self.image = player_images['go-left-2']
+            self.stateOfWalkLeft = not self.stateOfWalkLeft
             self.rect.x -= self.speed
+            self.lastMove = 'left'
             for tile in self.warning_group:
                 if pygame.sprite.collide_rect(self, tile):
                     self.rect.x += self.speed
                     break
+        #  логика движения вправо
         if self.movement['right']:
-            if self.image != player_images['stay-right']:
-                self.image = player_images['stay-right']
+            #  свитчим по стадии хотьбы
+            if self.stateOfWalkRight:
+                self.image = player_images['go-right-1']
+            else:
+                self.image = player_images['go-right-2']
+            self.stateOfWalkRight = not self.stateOfWalkRight
             self.rect.x += self.speed
+            self.lastMove = 'right'
             for tile in self.warning_group:
                 if pygame.sprite.collide_rect(self, tile):
                     self.rect.x -= self.speed
                     break
+        if not self.movement['right'] and not self.movement['left']:
+            if self.lastMove == 'right':
+                self.image = player_images['stay-right']
+            else:
+                self.image = player_images['stay-left']
         self.rect.y += self.fallSpeed
         for tile in self.warning_group:
             if pygame.sprite.collide_rect(self, tile):
@@ -105,8 +131,10 @@ class Player(pygame.sprite.Sprite):
                 break
         events.clear()
 
+    #  узнаем конечную ширину и высоту поля
     def set_field_geometry(self, geometry):
         self.fieldGeometry = geometry
 
+    #  устанавливаем группу препятствий(нужна для правильной хотьбы)
     def set_warning_group(self, tiles_group):
         self.warning_group = pygame.sprite.Group(*filter(lambda till: till.type == 'upper-block', tiles_group))

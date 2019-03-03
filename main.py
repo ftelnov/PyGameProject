@@ -41,6 +41,7 @@ def start_screen():
 
 def main_game():
     events = []
+    mainPlayer.reincarnation()
     main_running = True
     while main_running:
         for event in pygame.event.get():
@@ -73,7 +74,6 @@ def die_screen():
                 die_running = False
         pygame.display.flip()
         clock.tick(FPS)
-    mainPlayer.reincarnation()
     main_game()
 
 

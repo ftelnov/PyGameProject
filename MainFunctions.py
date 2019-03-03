@@ -1,4 +1,4 @@
-from Classes import Tile, Player
+from Classes import Tile, Player, DangerousTile
 import pygame
 
 
@@ -22,7 +22,7 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 Tile(tiles_group, all_sprites, 'empty-block', x, y)
                 new_player = Player(player_group, all_sprites, x, y)
             elif level[y][x] == '!':
-                Tile(tiles_group, all_sprites, 'dangerous-triangular-block', x, y)
+                DangerousTile(tiles_group, all_sprites, 'dangerous-triangular-block', x, y)
     # вернем игрока, а также размер поля в клетках
     new_player.set_warning_group(tiles_group)
     new_player.set_dangerous_group(tiles_group)

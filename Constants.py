@@ -9,7 +9,6 @@ def load_image(filename):
 FON = load_image('fons/fon.png')
 DIE = load_image('fons/die.png')
 
-
 BUTTON_NEW_GAME = load_image('buttons/new_game_button.png')
 DIE.blit(BUTTON_NEW_GAME, (200, 250))
 
@@ -18,7 +17,7 @@ tile_width = tile_height = 50
 tile_images = {
     'upper-block': pygame.transform.scale(load_image('blocks/block-main.png'), (tile_width, tile_height)),
     'empty-block': pygame.transform.scale(load_image('blocks/block-empty.png'), (tile_width, tile_height)),
-    'dangerous-triangular-block': load_image('blocks/dangerous-triangular-block.png')
+    'dangerous-triangular-block': load_image('blocks/dangerous-triangular-block.png'),
 }
 
 player_images = {

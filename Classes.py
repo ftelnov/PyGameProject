@@ -27,6 +27,12 @@ class Tile(pygame.sprite.Sprite):
         # форма, ограничивающая блок препятствия
 
 
+class DangerousTile(Tile):
+    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
+        self.rect.y += 20
+
+
 # Класс игрока
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_group, all_sprites, pos_x, pos_y):

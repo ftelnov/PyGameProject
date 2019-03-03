@@ -54,6 +54,7 @@ def main_game():
         tiles_group.draw(screen)
         if not mainPlayer.alive:
             main_running = False
+        events.clear()
         pygame.display.flip()
         clock.tick(FPS)
     die_screen()

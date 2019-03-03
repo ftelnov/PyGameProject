@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.start_position = self.rect.x, self.rect.y
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
+        self.fieldGeometry = 0  # разметка поля
         self.warning_group = 0  # блоки, через которые нельзя пройти
         self.dangerous_group = 0  # "убийственные блоки"
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
@@ -76,15 +77,11 @@ class Player(pygame.sprite.Sprite):
 
         #  Моделька находится в постоянном падении
         self.rect.y += self.fallSpeed
-        for tile in self.warning_group:
-            if pygame.sprite.collide_rect(self, tile):
-                self.rect.y -= self.fallSpeed
-                self.onEarth = True
-                break
-        for tile in self.dangerous_group:
-            if pygame.sprite.collide_rect(self, tile):
-                self.alive = False
-                continue
+        if pygame.sprite.spritecollide(self, self.warning_group, False):
+            self.rect.y -= self.fallSpeed
+            self.onEarth = True
+        if pygame.sprite.spritecollide(self, self.dangerous_group, False):
+            self.alive = False
 
         #  Проверяем, на земле ли персонаж
         if self.onEarth:
@@ -92,10 +89,8 @@ class Player(pygame.sprite.Sprite):
         else:
             if 0 < self.stateOfJump <= 8:
                 self.rect.y -= self.jumpSpeed
-                for tile in self.warning_group:
-                    if pygame.sprite.collide_rect(self, tile):
-                        self.rect.y += self.jumpSpeed
-                        break
+                if pygame.sprite.spritecollide(self, self.warning_group, False):
+                    self.rect.y += self.jumpSpeed
                 self.stateOfJump += 1
 
         # проходимся по событиям
@@ -108,10 +103,8 @@ class Player(pygame.sprite.Sprite):
                 if event.type != pygame.KEYUP and self.onEarth:
                     self.rect.y -= self.jumpSpeed
                     self.stateOfJump = 1
-                    for tile in self.warning_group:
-                        if pygame.sprite.collide_rect(self, tile):
-                            self.rect.y += self.jumpSpeed
-                            break
+                    if pygame.sprite.spritecollide(self, self.warning_group, False):
+                        self.rect.y += self.jumpSpeed
             else:
                 self.movement[direction] = not self.movement[direction]
         #  логика движения влево
@@ -124,10 +117,8 @@ class Player(pygame.sprite.Sprite):
             self.stateOfWalkLeft = not self.stateOfWalkLeft
             self.rect.x -= self.speed
             self.lastMove = 'left'
-            for tile in self.warning_group:
-                if pygame.sprite.collide_rect(self, tile):
-                    self.rect.x += self.speed
-                    break
+            if pygame.sprite.spritecollide(self, self.warning_group, False):
+                self.rect.x += self.speed
         #  логика движения вправо
         if self.movement['right']:
             #  свитчим по стадии хотьбы
@@ -138,20 +129,16 @@ class Player(pygame.sprite.Sprite):
             self.stateOfWalkRight = not self.stateOfWalkRight
             self.rect.x += self.speed
             self.lastMove = 'right'
-            for tile in self.warning_group:
-                if pygame.sprite.collide_rect(self, tile):
-                    self.rect.x -= self.speed
-                    break
+            if pygame.sprite.spritecollide(self, self.warning_group, False):
+                self.rect.x -= self.speed
         if not self.movement['right'] and not self.movement['left']:
             if self.lastMove == 'right':
                 self.image = player_images['stay-right']
             else:
                 self.image = player_images['stay-left']
         self.rect.y += self.fallSpeed
-        for tile in self.warning_group:
-            if pygame.sprite.collide_rect(self, tile):
-                self.rect.y -= self.fallSpeed
-                break
+        if pygame.sprite.spritecollide(self, self.warning_group, False):
+            self.rect.y -= self.fallSpeed
         events.clear()
 
     #  узнаем конечную ширину и высоту поля

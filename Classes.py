@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
+        self.dangerous_group = 0  # "убийственные блоки"
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
         self.jumpSpeed = 20  # Высота прыжка
@@ -46,6 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.stateOfWalkRight = False  # Фазы хотьбы вправо
         self.lastMove = 'right'  # сторона, в которую игрок в последний раз шагал
 
+        self.alive = True
         self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе
         self.movement = {
             'left': False,
@@ -62,6 +64,10 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y -= self.fallSpeed
                 self.onEarth = True
                 break
+        for tile in self.dangerous_group:
+            if pygame.sprite.collide_rect(self, tile):
+                self.alive = False
+                continue
 
         #  Проверяем, на земле ли персонаж
         if self.onEarth:
@@ -138,3 +144,7 @@ class Player(pygame.sprite.Sprite):
     #  устанавливаем группу препятствий(нужна для правильной хотьбы)
     def set_warning_group(self, tiles_group):
         self.warning_group = pygame.sprite.Group(*filter(lambda till: till.type == 'upper-block', tiles_group))
+
+    def set_dangerous_group(self, tiles_group):
+        self.dangerous_group = pygame.sprite.Group(
+            *filter(lambda till: till.type == 'dangerous-triangular-block', tiles_group))

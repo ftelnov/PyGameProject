@@ -34,6 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_images['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 3)
+        self.start_position = self.rect.x, self.rect.y
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.warning_group = 0  # блоки, через которые нельзя пройти
@@ -53,6 +54,22 @@ class Player(pygame.sprite.Sprite):
             'left': False,
             'right': False,
         }  # индикатор движения
+
+    def reincarnation(self):
+        self.stateOfJump = 0
+        self.stateOfWalkLeft = False
+        self.stateOfWalkRight = False
+        self.lastMove = 'right'
+
+        self.alive = True
+        self.onEarth = True
+        self.movement['left'] = False
+        self.movement['right'] = False
+        self.rect.x = self.start_position[0]
+        self.rect.y = self.start_position[1]
+
+    def get_rect(self):
+        return self.rect.y, self.rect.x
 
     def update(self, events):
         self.onEarth = False

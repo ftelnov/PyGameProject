@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites)
 mainPlayer = level[0]
 mainPlayer.set_field_geometry(SIZE)
+start_position = mainPlayer.get_rect()
 
 
 def terminate():
@@ -71,7 +72,7 @@ def die_screen():
                 die_running = False
         pygame.display.flip()
         clock.tick(FPS)
-    mainPlayer.alive = 1
+    mainPlayer.reincarnation()
     main_game()
 
 

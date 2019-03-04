@@ -1,5 +1,6 @@
 from Classes import Tile, Player, DangerousTile
 import pygame
+from Constants import *
 
 
 def load_level(filename):
@@ -12,6 +13,7 @@ def load_level(filename):
 
 def generate_level(level, player_group, tiles_group, all_sprites):
     new_player, x, y = None, None, None
+    maximum_height = 0
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
@@ -23,7 +25,10 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 new_player = Player(player_group, all_sprites, x, y)
             elif level[y][x] == '!':
                 DangerousTile(tiles_group, all_sprites, 'dangerous-triangular-block', x, y)
+            if ADDHEIGHT + tile_height * y > maximum_height:
+                maximum_height = ADDHEIGHT + tile_height * y
     # вернем игрока, а также размер поля в клетках
     new_player.set_warning_group(tiles_group)
+    new_player.set_maximum_height(maximum_height)
     new_player.set_dangerous_group(tiles_group)
-    return new_player, x, y
+    return new_player, x, y, maximum_height

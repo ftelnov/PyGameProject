@@ -2,6 +2,7 @@ import pygame
 import sys
 from Constants import *
 from MainFunctions import *
+from Classes import *
 
 pygame.init()
 
@@ -40,8 +41,11 @@ def start_screen():
 
 
 def main_game():
+    camera = Camera()
     events = []
     mainPlayer.reincarnation()
+    for sprite in tiles_group:
+        sprite.reincarnation()
     main_running = True
     while main_running:
         for event in pygame.event.get():
@@ -50,6 +54,9 @@ def main_game():
             if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
                 events.append(event)
         screen.blit(FON, (0, 0))
+        camera.update(mainPlayer)
+        for sprite in all_sprites:
+            camera.apply(sprite)
         player_group.update(events)
         all_sprites.draw(screen)
         tiles_group.draw(screen)
@@ -63,15 +70,18 @@ def main_game():
 
 def die_screen():
     fon = pygame.transform.scale(DIE, (WIDTH, HEIGHT))
+    buttons_group = pygame.sprite.Group()
+    newgamebutton = Button(buttons_group, 200, 250, button_images['new-game'])
     screen.blit(fon, (0, 0))
     die_running = True
     while die_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                die_running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if newgamebutton.rect.collidepoint(event.pos):
+                            die_running = False
+        buttons_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
     main_game()

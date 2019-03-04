@@ -53,6 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_images['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 1)
+        # перемещаем объект как нужно
         self.start_position = self.rect.x, self.rect.y
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий

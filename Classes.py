@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(player_group, all_sprites)
         self.image = player_images['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 3)
+            tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 1)
         self.start_position = self.rect.x, self.rect.y
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
@@ -64,8 +64,8 @@ class Player(pygame.sprite.Sprite):
         self.jumpSpeed = 20  # Высота прыжка
         self.fallSpeed = 4  # Скорость паденя
         self.stateOfJump = 0  # Фазы прыжка
-        self.stateOfWalkLeft = False  # Фазы хотьбы влево
-        self.stateOfWalkRight = False  # Фазы хотьбы вправо
+        self.stateOfWalkLeft = 0  # Фазы хотьбы влево
+        self.stateOfWalkRight = 0  # Фазы хотьбы вправо
         self.lastMove = 'right'  # сторона, в которую игрок в последний раз шагал
 
         self.alive = True
@@ -80,8 +80,8 @@ class Player(pygame.sprite.Sprite):
 
     def reincarnation(self):
         self.stateOfJump = 0
-        self.stateOfWalkLeft = False
-        self.stateOfWalkRight = False
+        self.stateOfWalkLeft = 0
+        self.stateOfWalkRight = 0
         self.lastMove = 'right'
 
         self.alive = True
@@ -99,17 +99,14 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, events):
         self.onEarth = False
-
         #  Моделька находится в постоянном падении
         self.rect.y += self.fallSpeed
+        self.maximumHeight -= self.fallSpeed
         if pygame.sprite.spritecollide(self, self.warning_group, False):
             self.rect.y -= self.fallSpeed
+            self.maximumHeight += self.fallSpeed
             self.onEarth = True
         if pygame.sprite.spritecollide(self, self.dangerous_group, False):
-            self.alive = False
-
-        # Проверяем, а жив ли персонаж
-        if self.maximumHeight < self.rect.y:
             self.alive = False
 
         # Проверяем, на земле ли персонаж
@@ -143,27 +140,31 @@ class Player(pygame.sprite.Sprite):
         #  логика движения влево
         if self.movement['left']:
             #  свитчим по стадии хотьбы
-            if self.stateOfWalkLeft:
+            if self.stateOfWalkLeft <= 4:
                 self.image = player_images['go-left-1']
-            else:
+            elif 4 <= self.stateOfWalkLeft <= 8:
                 self.image = player_images['go-left-2']
-            self.stateOfWalkLeft = not self.stateOfWalkLeft
+            else:
+                self.stateOfWalkLeft = 0
             self.rect.x -= self.speed
             self.lastMove = 'left'
             if pygame.sprite.spritecollide(self, self.warning_group, False):
                 self.rect.x += self.speed
+            self.stateOfWalkLeft += 1
         #  логика движения вправо
         if self.movement['right']:
             #  свитчим по стадии хотьбы
-            if self.stateOfWalkRight:
+            if self.stateOfWalkRight <= 4:
                 self.image = player_images['go-right-1']
-            else:
+            elif 4 <= self.stateOfWalkRight <= 8:
                 self.image = player_images['go-right-2']
-            self.stateOfWalkRight = not self.stateOfWalkRight
+            else:
+                self.stateOfWalkRight = 0
             self.rect.x += self.speed
             self.lastMove = 'right'
             if pygame.sprite.spritecollide(self, self.warning_group, False):
                 self.rect.x -= self.speed
+            self.stateOfWalkRight += 1
         if not self.movement['right'] and not self.movement['left']:
             if self.lastMove == 'right':
                 self.image = player_images['stay-right']

@@ -39,6 +39,26 @@ class DangerousTile(Tile):
         self.safeForm = self.rect.x, self.rect.y
 
 
+class ShadowTile(Tile):
+    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
+        self.image = tile_images['dangerous-shadow-block']
+        self.player_sprite = 0
+
+    def set_player_sprite(self, player):
+        self.player_sprite = player
+
+    def update(self):
+        if self.rect.collide_rect(self, self.player_sprite):
+            self.kill()
+
+
+class JumpTile(Tile):
+    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
+        self.image = tile_images['jump-block']
+
+
 class Button(pygame.sprite.Sprite):
     def __init__(self, group, x, y, image):
         super().__init__(group)
@@ -58,12 +78,15 @@ class Player(pygame.sprite.Sprite):
         self.tile_width = tile_width  # ширина всех припятсвия
         self.tile_height = tile_height  # высота всех препятсвий
         self.fieldGeometry = 0  # разметка поля
+
         self.warning_group = 0  # блоки, через которые нельзя пройти
         self.dangerous_group = 0  # "убийственные блоки"
+        self.jump_group = 0  # блоки, на которых можно высоко прыгнуть
+
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
-        self.jumpSpeed = 20  # Высота прыжка
-        self.fallSpeed = 4  # Скорость паденя
+        self.jumpSpeed = 18  # Высота прыжка
+        self.fallSpeed = 9  # Скорость паденя
         self.stateOfJump = 0  # Фазы прыжка
         self.stateOfWalkLeft = 0  # Фазы хотьбы влево
         self.stateOfWalkRight = 0  # Фазы хотьбы вправо
@@ -113,8 +136,12 @@ class Player(pygame.sprite.Sprite):
         # Проверяем, на земле ли персонаж
         if self.onEarth:
             self.stateOfJump = 0
+            if pygame.sprite.spritecollide(self, self.jump_group, False):
+                self.jumpSpeed = 36
+            else:
+                self.jumpSpeed = 18
         else:
-            if 0 < self.stateOfJump <= 8:
+            if 0 < self.stateOfJump <= 12:
                 self.rect.y -= self.jumpSpeed
                 self.maximumHeight += self.jumpSpeed
                 if pygame.sprite.spritecollide(self, self.warning_group, False):
@@ -171,11 +198,6 @@ class Player(pygame.sprite.Sprite):
                 self.image = player_images['stay-right']
             else:
                 self.image = player_images['stay-left']
-        self.rect.y += self.fallSpeed
-        self.maximumHeight -= self.fallSpeed
-        if pygame.sprite.spritecollide(self, self.warning_group, False):
-            self.rect.y -= self.fallSpeed
-            self.maximumHeight += self.fallSpeed
         if self.maximumHeight < 0:
             self.alive = 0
         events.clear()
@@ -188,10 +210,16 @@ class Player(pygame.sprite.Sprite):
     def set_warning_group(self, tiles_group):
         self.warning_group = pygame.sprite.Group(*filter(lambda till: till.type == 'upper-block', tiles_group))
 
+    #  устанавливаем группу, которая убивает игрока
     def set_dangerous_group(self, tiles_group):
         self.dangerous_group = pygame.sprite.Group(
             *filter(lambda till: till.type == 'dangerous-triangular-block', tiles_group))
 
+    #  устанавливаем максимальную высоту, которая является смертельной для игрока
     def set_maximum_height(self, height):
         self.maximumHeight = height
         self.safeMaximumHeight = height
+
+    #  устанавливаем группу блоков, на которых можно высоко выпрыгнуть
+    def set_jump_group(self, tiles_group):
+        self.jump_group = pygame.sprite.Group(*filter(lambda x: x.type == 'jump-block', tiles_group))

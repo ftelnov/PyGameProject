@@ -3,3 +3,5 @@ How to read'n'create your own levels:
 # - wall(not dangerous)
 @ - Main Player
 . - Empty block
+J - Jump block(js)
+S - Shadow block(python)

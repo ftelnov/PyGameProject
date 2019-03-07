@@ -14,7 +14,9 @@ tile_width = tile_height = 50
 tile_images = {
     'upper-block': pygame.transform.scale(load_image('blocks/block-main.png'), (tile_width, tile_height)),
     'empty-block': pygame.transform.scale(load_image('blocks/block-empty.png'), (tile_width, tile_height)),
+    'dangerous-shadow-block': pygame.transform.scale(load_image('blocks/dangerous-shadow-block.png'), (tile_width, tile_height)),
     'dangerous-triangular-block': load_image('blocks/dangerous-triangular-block.png'),
+    'jump-block': pygame.transform.scale(load_image('blocks/block-jump.png'), (tile_width, tile_height))
 }
 
 player_images = {

@@ -39,6 +39,12 @@ class DangerousTile(Tile):
         self.safeForm = self.rect.x, self.rect.y
 
 
+class JumpTile(Tile):
+    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
+        self.image = tile_images['jump-block']
+
+
 class ShadowTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
@@ -47,16 +53,6 @@ class ShadowTile(Tile):
 
     def set_player_sprite(self, player):
         self.player_sprite = player
-
-    def update(self):
-        if self.rect.collide_rect(self, self.player_sprite):
-            self.kill()
-
-
-class JumpTile(Tile):
-    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
-        self.image = tile_images['jump-block']
 
 
 class Button(pygame.sprite.Sprite):
@@ -135,11 +131,13 @@ class Player(pygame.sprite.Sprite):
 
         # Проверяем, на земле ли персонаж
         if self.onEarth:
+            self.rect.y += self.fallSpeed
             self.stateOfJump = 0
             if pygame.sprite.spritecollide(self, self.jump_group, False):
                 self.jumpSpeed = 36
             else:
                 self.jumpSpeed = 18
+            self.rect.y -= self.fallSpeed
         else:
             if 0 < self.stateOfJump <= 12:
                 self.rect.y -= self.jumpSpeed
@@ -164,7 +162,10 @@ class Player(pygame.sprite.Sprite):
                         self.rect.y += self.jumpSpeed
                         self.maximumHeight -= self.jumpSpeed
             else:
-                self.movement[direction] = not self.movement[direction]
+                if event.type == pygame.KEYUP:
+                    self.movement[direction] = False
+                elif event.type == pygame.KEYDOWN:
+                    self.movement[direction] = True
         #  логика движения влево
         if self.movement['left']:
             #  свитчим по стадии хотьбы
@@ -208,7 +209,8 @@ class Player(pygame.sprite.Sprite):
 
     #  устанавливаем группу препятствий(нужна для правильной хотьбы)
     def set_warning_group(self, tiles_group):
-        self.warning_group = pygame.sprite.Group(*filter(lambda till: till.type == 'upper-block', tiles_group))
+        self.warning_group = pygame.sprite.Group(
+            *filter(lambda till: till.type == 'upper-block' or till.type == 'jump-block', tiles_group))
 
     #  устанавливаем группу, которая убивает игрока
     def set_dangerous_group(self, tiles_group):

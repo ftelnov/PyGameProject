@@ -9,6 +9,7 @@ def load_image(filename):
 FON = load_image('fons/fon.png')
 DIE = load_image('fons/die.png')
 FON_WITHOUT_BUTTONS = load_image('fons/fon-without-buttons.png')
+ICON = load_image('icons/icon.png')
 
 tile_width = tile_height = 50
 
@@ -33,7 +34,8 @@ player_images = {
 }
 
 button_images = {
-    'new-game': load_image('buttons/new_game_button.png')
+    'new-game': load_image('buttons/new_game_button.png'),
+    'start-game': load_image('buttons/start_game_button.png'),
 }
 SIZE = WIDTH, HEIGHT = 812, 469
 

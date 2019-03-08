@@ -12,6 +12,8 @@ tiles_group = pygame.sprite.Group()  # препятсвия
 player_group = pygame.sprite.Group()  # группа игрока
 
 screen = pygame.display.set_mode(SIZE)  # главный surface
+pygame.display.set_icon(ICON)
+pygame.display.set_caption('CodeRunner')
 pygame.display.flip()  # отображаем начальный экран
 clock = pygame.time.Clock()  # контроль времени в pygame
 level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites)  # генерируем уровень
@@ -29,15 +31,18 @@ def terminate():
 #  начальная заставка
 def start_screen():
     fon = pygame.transform.scale(FON, (WIDTH, HEIGHT))  # фон заставки
+    buttons_group = pygame.sprite.Group()
+    start_game_button = Button(buttons_group, 200, 250, button_images['start-game'])
     screen.blit(fon, (0, 0))  # грузим фон
     start_running = True  # флаг заставки
     while start_running:  # основной цикл заставки
         for event in pygame.event.get():  # чекаем события
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                start_running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if start_game_button.rect.collidepoint(event.pos):
+                    start_running = False
+        buttons_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
     main_game()

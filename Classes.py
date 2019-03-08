@@ -2,9 +2,9 @@ import pygame
 from Constants import *
 
 
-#  функция проверяет, принадлежит ли блок тому, на котором можно стоять, или "warning block group"
+# функция проверяет, принадлежит ли блок тому, на котором можно стоять, или "warning block group"
 def check_warning_group(tile):
-    #  записываю каждый кондитионал в отдельной строке, дабы не загромождать код
+    # записываю каждый кондитионал в отдельной строке, дабы не загромождать код
     first = tile.type == 'upper-block'
     second = tile.type == 'jump-block'
     speed = tile.type == 'speed-up-block' or tile.type == 'speed-down-block'
@@ -19,10 +19,12 @@ class Camera:
         self.dx = 0
         self.dy = 0
 
+    # привязка камеры к какому-либо объекту
     def apply(self, obj):
         obj.rect.x += self.dx
         obj.rect.y += self.dy
 
+    # изменяем положение объекта относительно камеры
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
@@ -43,7 +45,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.y = self.safeForm[1]
 
 
-#  Класс убивающего блока
+# Класс убивающего блока
 class DangerousTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
@@ -51,7 +53,7 @@ class DangerousTile(Tile):
         self.safeForm = self.rect.x, self.rect.y
 
 
-#  Класс блоков, через которые проваливаешься
+# Класс блоков, через которые проваливаешься
 class ShadowTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
@@ -134,6 +136,7 @@ class Player(pygame.sprite.Sprite):
             self.onEarth = True
         if pygame.sprite.spritecollide(self, self.dangerous_group, False):
             self.alive = False
+            Player.play_die_song()
 
         # Проверяем, на земле ли персонаж
         if self.onEarth:
@@ -222,6 +225,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = player_images['stay-left']
         if self.maximumHeight < 0:
             self.alive = 0
+            Player.play_die_song()
         events.clear()
 
     #  узнаем конечную ширину и высоту поля
@@ -256,3 +260,8 @@ class Player(pygame.sprite.Sprite):
     def set_speed_down_group(self, tiles_group):
         self.speed_down_group = pygame.sprite.Group(
             *filter(lambda x: x.type == 'speed-down-block', tiles_group))
+
+    @staticmethod
+    def play_die_song():
+        pygame.mixer.music.load("data/music/damage.wav")
+        pygame.mixer.music.play()

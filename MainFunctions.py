@@ -33,8 +33,6 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 Tile(tiles_group, all_sprites, 'speed-up-block', x, y)
             elif level[y][x] == '-':
                 Tile(tiles_group, all_sprites, 'speed-down-block', x, y)
-            elif level[y][x] == ' ':
-                Tile(tiles_group, all_sprites, 'empty-block', x, y)
             if tile_height * y - ADDHEIGHT > maximum_height:
                 maximum_height = tile_height * y - ADDHEIGHT
     # вернем игрока, а также размер поля в клетках

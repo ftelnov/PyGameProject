@@ -21,7 +21,8 @@ tile_images = {
     'dangerous-triangular-block': load_image('blocks/dangerous-triangular-block.png'),
     'jump-block': pygame.transform.scale(load_image('blocks/block-jump.png'), (tile_width, tile_height)),
     'speed-up-block': pygame.transform.scale(load_image('blocks/block-speed-up.png'), (tile_width, tile_height)),
-    'speed-down-block': pygame.transform.scale(load_image('blocks/block-speed-down.png'), (tile_width, tile_height))
+    'speed-down-block': pygame.transform.scale(load_image('blocks/block-speed-down.png'), (tile_width, tile_height)),
+    'clone-block': pygame.transform.scale(load_image('blocks/block-clone.png'), (tile_width, tile_height))
 }
 
 player_images = {

@@ -1,6 +1,4 @@
-import pygame
 import sys
-from Constants import *
 from MainFunctions import *
 from Classes import *
 
@@ -10,13 +8,15 @@ pygame.init()  # инициализация
 all_sprites = pygame.sprite.Group()  # все спрайты
 tiles_group = pygame.sprite.Group()  # препятсвия
 player_group = pygame.sprite.Group()  # группа игрока
+clone_group = pygame.sprite.Group()  # группа клон-блоков
 
 screen = pygame.display.set_mode(SIZE)  # главный surface
 pygame.display.set_icon(ICON)
 pygame.display.set_caption('CodeRunner')
 pygame.display.flip()  # отображаем начальный экран
 clock = pygame.time.Clock()  # контроль времени в pygame
-level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites)  # генерируем уровень
+level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites,
+                       clone_group)  # генерируем уровень
 mainPlayer = level[0]  # получаем персонажа
 mainPlayer.set_field_geometry(SIZE)  # устанавливаем игроку размеры поля(нужно для корректной работы спрайта игрока)
 start_position = mainPlayer.get_rect()  # стартовая позиция игрока
@@ -53,8 +53,14 @@ def main_game():
     camera = Camera()  # инициализируем объект камеры
     events = []  # заводим список событий
     mainPlayer.reincarnation()  # восстанавливаем данные главного игрока
+
     for sprite in tiles_group:  # восстанавливаем все спрайты
         sprite.reincarnation()
+
+    for sprite in all_sprites:
+        if sprite.type == 'player-clone':
+            sprite.kill()
+
     main_running = True
     while main_running:  # основной цикл
         for event in pygame.event.get():
@@ -72,9 +78,11 @@ def main_game():
         # подгружаем игроку все события
         player_group.update(events)
 
+        # обновляем группу клон-блоков
+        clone_group.update(mainPlayer, all_sprites)
+
         # отрисовываем спрайты
         all_sprites.draw(screen)
-
         # если персонаж умер, заканчиваем игру
         if not mainPlayer.alive:
             main_running = False

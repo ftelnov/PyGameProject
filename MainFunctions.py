@@ -1,5 +1,4 @@
-from Classes import Tile, Player, DangerousTile, ShadowTile
-import pygame
+from Classes import Tile, Player, DangerousTile, ShadowTile, CloneTile
 from Constants import *
 
 
@@ -11,7 +10,7 @@ def load_level(filename):
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
-def generate_level(level, player_group, tiles_group, all_sprites):
+def generate_level(level, player_group, tiles_group, all_sprites, clone_tiles):
     new_player, x, y = None, None, None
     maximum_height = 0
     for y in range(len(level)):
@@ -33,6 +32,8 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 Tile(tiles_group, all_sprites, 'speed-up-block', x, y)
             elif level[y][x] == '-':
                 Tile(tiles_group, all_sprites, 'speed-down-block', x, y)
+            elif level[y][x] == 'C':
+                CloneTile(clone_tiles, tiles_group, all_sprites, 'clone-block', x, y)
             if tile_height * y - ADDHEIGHT > maximum_height:
                 maximum_height = tile_height * y - ADDHEIGHT
     # вернем игрока, а также размер поля в клетках

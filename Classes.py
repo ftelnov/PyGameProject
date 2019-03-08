@@ -1,5 +1,5 @@
-import pygame
 from Constants import *
+import pygame
 
 
 # функция проверяет, принадлежит ли блок тому, на котором можно стоять, или "warning block group"
@@ -8,7 +8,8 @@ def check_warning_group(tile):
     first = tile.type == 'upper-block'
     second = tile.type == 'jump-block'
     speed = tile.type == 'speed-up-block' or tile.type == 'speed-down-block'
-    if first or second or speed:
+    clone = tile.type == 'clone-block'
+    if first or second or speed or clone:
         return True
     return False
 
@@ -50,6 +51,7 @@ class DangerousTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
         self.rect.y += 20
+        self.rect.x += 5
         self.safeForm = self.rect.x, self.rect.y
 
 
@@ -60,11 +62,42 @@ class ShadowTile(Tile):
         self.image = tile_images['dangerous-shadow-block']
 
 
+# Класс блоков для клона персонажа(Java)
+class CloneTile(Tile):
+    def __init__(self, clone_tiles, tiles_group, all_sprites, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
+        self.add(clone_tiles)
+        self.flag = 0  # наступали на этот блок или нет
+
+    def update(self, main_player, all_sprites):
+        if self.flag:
+            return
+        main_player.rect.y += 1
+        if pygame.sprite.collide_rect(self, main_player):
+            self.flag = 1
+            PlayerCloneUnused(all_sprites, main_player.rect.x, main_player.rect.y - 1, main_player.image)
+        main_player.rect.y -= 1
+
+    def reincarnation(self):
+        super().reincarnation()
+        self.flag = 0
+
+
+# Класс кнопок для меню
 class Button(pygame.sprite.Sprite):
     def __init__(self, group, x, y, image):
         super().__init__(group)
         self.image = image
         self.rect = self.image.get_rect().move(x, y)
+
+
+# Клон персонажа
+class PlayerCloneUnused(pygame.sprite.Sprite):
+    def __init__(self, group, x, y, image):
+        super().__init__(group)
+        self.image = image
+        self.rect = self.image.get_rect().move(x, y)
+        self.type = 'player-clone'
 
 
 # Класс игрока
@@ -74,6 +107,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_images['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 1)
+        self.type = 'player'
         # перемещаем объект как нужно
         self.start_position = self.rect.x, self.rect.y
         self.tile_width = tile_width  # ширина всех припятсвия

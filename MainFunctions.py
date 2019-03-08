@@ -6,7 +6,7 @@ from Constants import *
 def load_level(filename):
     filename = "data/levels/" + filename
     with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+        level_map = [line.replace(' ', '.') for line in mapFile]
     max_width = max(map(len, level_map))
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
@@ -33,6 +33,8 @@ def generate_level(level, player_group, tiles_group, all_sprites):
                 Tile(tiles_group, all_sprites, 'speed-up-block', x, y)
             elif level[y][x] == '-':
                 Tile(tiles_group, all_sprites, 'speed-down-block', x, y)
+            elif level[y][x] == ' ':
+                Tile(tiles_group, all_sprites, 'empty-block', x, y)
             if tile_height * y - ADDHEIGHT > maximum_height:
                 maximum_height = tile_height * y - ADDHEIGHT
     # вернем игрока, а также размер поля в клетках

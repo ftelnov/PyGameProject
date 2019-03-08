@@ -8,6 +8,7 @@ def load_image(filename):
 
 FON = load_image('fons/fon.png')
 DIE = load_image('fons/die.png')
+FON_WITHOUT_BUTTONS = load_image('fons/fon-without-buttons.png')
 
 tile_width = tile_height = 50
 

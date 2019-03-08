@@ -4,4 +4,6 @@ How to read'n'create your own levels:
 @ - Main Player
 . - Empty block
 J - Jump block(js)
-S - Shadow block(python)
+H - Shadow block(python)
+- - Speed down block(ruby)
++ - Speed up block(golang)

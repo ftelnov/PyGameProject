@@ -1,4 +1,4 @@
-from Classes import Tile, Player, DangerousTile, ShadowTile, JumpTile
+from Classes import Tile, Player, DangerousTile, ShadowTile
 import pygame
 from Constants import *
 
@@ -28,7 +28,11 @@ def generate_level(level, player_group, tiles_group, all_sprites):
             elif level[y][x] == 'S':
                 ShadowTile(tiles_group, all_sprites, 'dangerous-shadow-block', x, y)
             elif level[y][x] == 'J':
-                JumpTile(tiles_group, all_sprites, 'jump-block', x, y)
+                Tile(tiles_group, all_sprites, 'jump-block', x, y)
+            elif level[y][x] == '+':
+                Tile(tiles_group, all_sprites, 'speed-up-block', x, y)
+            elif level[y][x] == '-':
+                Tile(tiles_group, all_sprites, 'speed-down-block', x, y)
             if tile_height * y - ADDHEIGHT > maximum_height:
                 maximum_height = tile_height * y - ADDHEIGHT
     # вернем игрока, а также размер поля в клетках
@@ -38,8 +42,7 @@ def generate_level(level, player_group, tiles_group, all_sprites):
     new_player.set_warning_group(tiles_group)
     new_player.set_dangerous_group(tiles_group)
     new_player.set_jump_group(tiles_group)
+    new_player.set_speed_up_group(tiles_group)
+    new_player.set_speed_down_group(tiles_group)
 
-    for tile in tiles_group:
-        if tile.type == 'dangerous-shadow-block':
-            tile.set_player_sprite(new_player)
     return new_player, x, y, maximum_height

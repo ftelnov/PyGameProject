@@ -2,6 +2,17 @@ import pygame
 from Constants import *
 
 
+#  функция проверяет, принадлежит ли блок тому, на котором можно стоять, или "warning block group"
+def check_warning_group(tile):
+    #  записываю каждый кондитионал в отдельной строке, дабы не загромождать код
+    first = tile.type == 'upper-block'
+    second = tile.type == 'jump-block'
+    speed = tile.type == 'speed-up-block' or tile.type == 'speed-down-block'
+    if first or second or speed:
+        return True
+    return False
+
+
 # Класс камеры
 class Camera:
     def __init__(self):
@@ -32,6 +43,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.y = self.safeForm[1]
 
 
+#  Класс убивающего блока
 class DangerousTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
@@ -39,20 +51,11 @@ class DangerousTile(Tile):
         self.safeForm = self.rect.x, self.rect.y
 
 
-class JumpTile(Tile):
-    def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
-        self.image = tile_images['jump-block']
-
-
+#  Класс блоков, через которые проваливаешься
 class ShadowTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
         self.image = tile_images['dangerous-shadow-block']
-        self.player_sprite = 0
-
-    def set_player_sprite(self, player):
-        self.player_sprite = player
 
 
 class Button(pygame.sprite.Sprite):
@@ -78,6 +81,8 @@ class Player(pygame.sprite.Sprite):
         self.warning_group = 0  # блоки, через которые нельзя пройти
         self.dangerous_group = 0  # "убийственные блоки"
         self.jump_group = 0  # блоки, на которых можно высоко прыгнуть
+        self.speed_up_group = 0  # блоки, увеличивающие скорость
+        self.speed_down_group = 0  # блоки, уменьшающие скорость
 
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
@@ -98,6 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.maximumHeight = maximum_height  # максимальная высота, до которой может опуститься персонаж
         self.safeMaximumHeight = maximum_height  # сейв максимальной высоты, для реинкарнации
 
+    #  восстанавливаем персонажа, чтобы не пересоздавать
     def reincarnation(self):
         self.stateOfJump = 0
         self.stateOfWalkLeft = 0
@@ -137,6 +143,21 @@ class Player(pygame.sprite.Sprite):
                 self.jumpSpeed = 36
             else:
                 self.jumpSpeed = 18
+
+            flag = 0  # Проверяем, стоим мы на каком-либо скоростном блоке
+
+            if pygame.sprite.spritecollide(self, self.speed_up_group, False):
+                self.speed = 10
+                flag = 1
+
+            if pygame.sprite.spritecollide(self, self.speed_down_group, False):
+                self.speed = 2
+                flag = 1
+
+            #  Если нет, то сносим скорость к стандартной
+            if not flag:
+                self.speed = 5
+
             self.rect.y -= self.fallSpeed
         else:
             if 0 < self.stateOfJump <= 12:
@@ -210,7 +231,7 @@ class Player(pygame.sprite.Sprite):
     #  устанавливаем группу препятствий(нужна для правильной хотьбы)
     def set_warning_group(self, tiles_group):
         self.warning_group = pygame.sprite.Group(
-            *filter(lambda till: till.type == 'upper-block' or till.type == 'jump-block', tiles_group))
+            *filter(check_warning_group, tiles_group))
 
     #  устанавливаем группу, которая убивает игрока
     def set_dangerous_group(self, tiles_group):
@@ -225,3 +246,13 @@ class Player(pygame.sprite.Sprite):
     #  устанавливаем группу блоков, на которых можно высоко выпрыгнуть
     def set_jump_group(self, tiles_group):
         self.jump_group = pygame.sprite.Group(*filter(lambda x: x.type == 'jump-block', tiles_group))
+
+    #  устанавливаем группу блоков, на которых можно ускориться
+    def set_speed_up_group(self, tiles_group):
+        self.speed_up_group = pygame.sprite.Group(
+            *filter(lambda x: x.type == 'speed-up-block', tiles_group))
+
+    #  устанавливаем группу блков, на которых можно замедлиться
+    def set_speed_down_group(self, tiles_group):
+        self.speed_down_group = pygame.sprite.Group(
+            *filter(lambda x: x.type == 'speed-down-block', tiles_group))

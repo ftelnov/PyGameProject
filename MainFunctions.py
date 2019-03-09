@@ -68,11 +68,9 @@ def generate_level(level, player_group, tiles_group, all_sprites, clone_tiles):
 
 
 # подгрузка уровней
-def get_levels(player_group, tiles_group, all_sprites, clone_tiles):
+def get_levels():
     levels = []  # список имен уровней
     for i in os.walk('data/levels'):  # проходим по папке лвла
         for j in i[-1]:  # проходим по списку имен файлов
             levels.append(j)  # добавляем в уровни имя уровня
-    # укоротил строчку, перенеся в доп. переменную map
-    temp = map(lambda x: generate_level(load_level(x), player_group, tiles_group, all_sprites, clone_tiles), levels)
-    return list(temp)
+    return levels

@@ -16,7 +16,7 @@ pygame.display.set_icon(ICON)  # устанавливаем иконку
 pygame.display.set_caption(NAME)  # устанавливаем имя
 pygame.display.flip()  # отображаем начальный экран
 clock = pygame.time.Clock()  # контроль времени в pygame
-levels = get_levels(player_group, tiles_group, all_sprites, clone_group)  # сгенерировали все уровни
+levels = get_levels()  # получили все уровни
 level_index = 0  # переменная, показывающая, на каком уровне мы сейчас находимся
 
 
@@ -52,10 +52,13 @@ def start_screen():
 
 
 #  основной цикл игры
-def main_game(level):
+def main_game(level_name):
     global level_index
+    for sprite in all_sprites:
+        sprite.kill()
     camera = Camera()  # инициализируем объект камеры
     events = []  # заводим список событий
+    level = generate_level(load_level(level_name), player_group, tiles_group, all_sprites, clone_group)
     main_player = level[0]  # получаем персонажа
     state = 0  # показывает, завершена ли игра, или персонаж умер
     # устанавливаем игроку размеры поля(нужно для корректной работы спрайта игрока)
@@ -106,14 +109,16 @@ def main_game(level):
     if level_index > len(levels) - 1:
         finish_game_screen()
         return
-    die_screen(level) if not state else main_game(levels[level_index])
+    die_screen(level_name) if not state else main_game(levels[level_index])
 
 
 # заставка смерти, аналогично предидущим
 def die_screen(level):
+    state = 0  # какая кнопка была нажата
     fon = pygame.transform.scale(DIE, (WIDTH, HEIGHT))
-    buttons_group = pygame.sprite.Group()
-    new_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['new-game'])
+    buttons_group = pygame.sprite.Group()  # группа кнопок
+    new_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['new-game'])  # кнопка начала игры
+    continue_game_button = Button(buttons_group, 200, 350, BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
     screen.blit(fon, (0, 0))
     die_running = True
     while die_running:
@@ -123,10 +128,17 @@ def die_screen(level):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if new_game_button.rect.collidepoint(event.pos):
                     die_running = False
+                    state = 1
+                if continue_game_button.rect.collidepoint(event.pos):
+                    die_running = False
+                    state = 0
         buttons_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
-    main_game(level)
+    if not state:
+        main_game(level)
+    else:
+        start_screen()
 
 
 # завершающий экран(если прошел игру)

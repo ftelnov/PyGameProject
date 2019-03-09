@@ -9,6 +9,7 @@ def load_image(filename):
 
 FON = load_image('fons/fon.png')  # главный фон приложения
 DIE = load_image('fons/die.png')  # фон смерти
+FINISH_GAME = load_image('fons/finish-game-fon.png')
 FON_WITHOUT_BUTTONS = load_image('fons/fon-without-buttons.png')  # фон без кнопок для самой игры
 ICON = load_image('icons/icon.png')  # иконка приложения
 NAME = 'CodeRunner'  # имя приложения
@@ -26,7 +27,8 @@ TILE_IMAGES = {
     'jump-block': pygame.transform.scale(load_image('blocks/block-jump.png'), (TILE_WIDTH, TILE_HEIGHT)),
     'speed-up-block': pygame.transform.scale(load_image('blocks/block-speed-up.png'), (TILE_WIDTH, TILE_HEIGHT)),
     'speed-down-block': pygame.transform.scale(load_image('blocks/block-speed-down.png'), (TILE_WIDTH, TILE_HEIGHT)),
-    'clone-block': pygame.transform.scale(load_image('blocks/block-clone.png'), (TILE_WIDTH, TILE_HEIGHT))
+    'clone-block': pygame.transform.scale(load_image('blocks/block-clone.png'), (TILE_WIDTH, TILE_HEIGHT)),
+    'finish-block': pygame.transform.scale(load_image('blocks/block-finish.png'), (TILE_WIDTH, TILE_HEIGHT))
 }
 
 # изображения игрока
@@ -43,6 +45,8 @@ PLAYER_IMAGES = {
 BUTTON_IMAGES = {
     'new-game': load_image('buttons/new_game_button.png'),
     'start-game': load_image('buttons/start_game_button.png'),
+    'github': load_image('buttons/github-button.png'),
+    'continue-game': load_image('buttons/continue_game_button.png'),
 }
 
 # размеры поля

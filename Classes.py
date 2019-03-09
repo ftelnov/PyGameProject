@@ -132,7 +132,8 @@ class Player(pygame.sprite.Sprite):
         self.stateOfWalkRight = 0  # Фазы хотьбы вправо
         self.lastMove = 'right'  # сторона, в которую игрок в последний раз шагал
 
-        self.alive = True
+        self.alive = True  # флаг, жив ли персонаж
+        self.finish_game = False  # флан, завершена ли игра
         self.onEarth = True  # Флаг, определяющий, находится Ваш персонаж на земле, или в воздухе
         self.movement = {
             'left': False,
@@ -164,6 +165,10 @@ class Player(pygame.sprite.Sprite):
         return self.rect.y, self.rect.x
 
     def update(self, events):
+        #  Проверяем, завершена ли игра
+        if pygame.sprite.spritecollide(self, self.finish_level_group, False):
+            self.finish_game = True
+            return
         self.onEarth = False
         #  Моделька находится в постоянном падении
         self.rect.y += self.fallSpeed

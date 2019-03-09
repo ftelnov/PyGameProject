@@ -1,5 +1,6 @@
 from Classes import Tile, Player, DangerousTile, ShadowTile, CloneTile
 from Constants import *
+import os
 
 
 # подгружаем уровень в игру
@@ -60,6 +61,18 @@ def generate_level(level, player_group, tiles_group, all_sprites, clone_tiles):
     new_player.set_jump_group(tiles_group)
     new_player.set_speed_up_group(tiles_group)
     new_player.set_speed_down_group(tiles_group)
+    new_player.set_finish_group(tiles_group)
 
     # возвращаем персонажа, его координаты, максимальную высоту
     return new_player, x, y, maximum_height
+
+
+# подгрузка уровней
+def get_levels(player_group, tiles_group, all_sprites, clone_tiles):
+    levels = []  # список имен уровней
+    for i in os.walk('data/levels'):  # проходим по папке лвла
+        for j in i[-1]:  # проходим по списку имен файлов
+            levels.append(j)  # добавляем в уровни имя уровня
+    # укоротил строчку, перенеся в доп. переменную map
+    temp = map(lambda x: generate_level(load_level(x), player_group, tiles_group, all_sprites, clone_tiles), levels)
+    return list(temp)

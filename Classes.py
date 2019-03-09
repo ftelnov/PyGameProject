@@ -35,9 +35,9 @@ class Camera:
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
-        self.image = tile_images[tile_type]  # Изображение препятствия
+        self.image = TILE_IMAGES[tile_type]  # Изображение препятствия
         self.type = tile_type  # Тип препятствия
-        self.rect = self.image.get_rect().move(tile_width * pos_x, ADDHEIGHT + tile_height * pos_y)
+        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x, ADD_HEIGHT + TILE_HEIGHT * pos_y)
         self.safeForm = self.rect.x, self.rect.y
         # форма, ограничивающая блок препятствия
 
@@ -59,7 +59,7 @@ class DangerousTile(Tile):
 class ShadowTile(Tile):
     def __init__(self, tiles_group, all_sprites, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites, tile_type, pos_x, pos_y)
-        self.image = tile_images['dangerous-shadow-block']
+        self.image = TILE_IMAGES['dangerous-shadow-block']
 
 
 # Класс блоков для клона персонажа(Java)
@@ -75,9 +75,11 @@ class CloneTile(Tile):
         main_player.rect.y += 1
         if pygame.sprite.collide_rect(self, main_player):
             self.flag = 1
+            # создаем клона персонажа
             PlayerCloneUnused(all_sprites, main_player.rect.x, main_player.rect.y - 1, main_player.image)
         main_player.rect.y -= 1
 
+    # возраждаем персонажа
     def reincarnation(self):
         super().reincarnation()
         self.flag = 0
@@ -104,14 +106,14 @@ class PlayerCloneUnused(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_group, all_sprites, pos_x, pos_y, maximum_height=-1):
         super().__init__(player_group, all_sprites)
-        self.image = player_images['stay-right']  # изображение игрока
+        self.image = PLAYER_IMAGES['stay-right']  # изображение игрока
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 3, ADDHEIGHT + tile_height * pos_y + tile_height // 6 - 1)
+            TILE_WIDTH * pos_x + 3, ADD_HEIGHT + TILE_HEIGHT * pos_y + TILE_HEIGHT // 6 - 1)
         self.type = 'player'
         # перемещаем объект как нужно
         self.start_position = self.rect.x, self.rect.y
-        self.tile_width = tile_width  # ширина всех припятсвия
-        self.tile_height = tile_height  # высота всех препятсвий
+        self.tile_width = TILE_WIDTH  # ширина всех припятсвия
+        self.tile_height = TILE_HEIGHT  # высота всех препятсвий
         self.fieldGeometry = 0  # разметка поля
 
         self.warning_group = 0  # блоки, через которые нельзя пройти
@@ -119,6 +121,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_group = 0  # блоки, на которых можно высоко прыгнуть
         self.speed_up_group = 0  # блоки, увеличивающие скорость
         self.speed_down_group = 0  # блоки, уменьшающие скорость
+        self.finish_level_group = 0  # блоки, завершающие уровень
 
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
@@ -156,6 +159,7 @@ class Player(pygame.sprite.Sprite):
 
         self.maximumHeight = self.safeMaximumHeight
 
+    # возвращаем местоположение персонажа
     def get_rect(self):
         return self.rect.y, self.rect.x
 
@@ -164,16 +168,19 @@ class Player(pygame.sprite.Sprite):
         #  Моделька находится в постоянном падении
         self.rect.y += self.fallSpeed
         self.maximumHeight -= self.fallSpeed
+        #  если стоим на статичном блоке
         if pygame.sprite.spritecollide(self, self.warning_group, False):
-            self.rect.y -= self.fallSpeed
-            self.maximumHeight += self.fallSpeed
+            self.rect.y -= self.fallSpeed  # если мы стоим на блоке, возвращаемся в исходное положение
+            self.maximumHeight += self.fallSpeed  # также приводим в обратное положение максимальную высоту
             self.onEarth = True
+        #  если пересекаемся с опасным блоком
         if pygame.sprite.spritecollide(self, self.dangerous_group, False):
-            self.alive = False
-            Player.play_die_song()
+            self.alive = False  # убиваем персонажа
+            Player.play_die_song()  # отыгрываем мелодию смерти
 
         # Проверяем, на земле ли персонаж
         if self.onEarth:
+            #  стандартно проверяем блоки, на которых стоим
             self.rect.y += self.fallSpeed
             self.stateOfJump = 0
             if pygame.sprite.spritecollide(self, self.jump_group, False):
@@ -195,8 +202,9 @@ class Player(pygame.sprite.Sprite):
             if not flag:
                 self.speed = 5
 
-            self.rect.y -= self.fallSpeed
+            self.rect.y -= self.fallSpeed  # вовзращаемся в исходное положение
         else:
+            #  логика прыжка
             if 0 < self.stateOfJump <= 12:
                 self.rect.y -= self.jumpSpeed
                 self.maximumHeight += self.jumpSpeed
@@ -228,13 +236,13 @@ class Player(pygame.sprite.Sprite):
         if self.movement['left']:
             #  свитчим по стадии хотьбы
             if self.stateOfWalkLeft <= 4:
-                self.image = player_images['go-left-1']
+                self.image = PLAYER_IMAGES['go-left-1']
             elif 4 <= self.stateOfWalkLeft <= 8:
-                self.image = player_images['go-left-2']
+                self.image = PLAYER_IMAGES['go-left-2']
             else:
                 self.stateOfWalkLeft = 0
             self.rect.x -= self.speed
-            self.lastMove = 'left'
+            self.lastMove = 'left'  # в последний раз двигались влево
             if pygame.sprite.spritecollide(self, self.warning_group, False):
                 self.rect.x += self.speed
             self.stateOfWalkLeft += 1
@@ -242,21 +250,21 @@ class Player(pygame.sprite.Sprite):
         if self.movement['right']:
             #  свитчим по стадии хотьбы
             if self.stateOfWalkRight <= 4:
-                self.image = player_images['go-right-1']
+                self.image = PLAYER_IMAGES['go-right-1']
             elif 4 <= self.stateOfWalkRight <= 8:
-                self.image = player_images['go-right-2']
+                self.image = PLAYER_IMAGES['go-right-2']
             else:
                 self.stateOfWalkRight = 0
             self.rect.x += self.speed
-            self.lastMove = 'right'
+            self.lastMove = 'right'  # в последний раз двигались вправо
             if pygame.sprite.spritecollide(self, self.warning_group, False):
                 self.rect.x -= self.speed
             self.stateOfWalkRight += 1
         if not self.movement['right'] and not self.movement['left']:
             if self.lastMove == 'right':
-                self.image = player_images['stay-right']
+                self.image = PLAYER_IMAGES['stay-right']
             else:
-                self.image = player_images['stay-left']
+                self.image = PLAYER_IMAGES['stay-left']
         if self.maximumHeight < 0:
             self.alive = 0
             Player.play_die_song()
@@ -290,11 +298,16 @@ class Player(pygame.sprite.Sprite):
         self.speed_up_group = pygame.sprite.Group(
             *filter(lambda x: x.type == 'speed-up-block', tiles_group))
 
-    #  устанавливаем группу блков, на которых можно замедлиться
+    #  устанавливаем группу блоков, на которых можно замедлиться
     def set_speed_down_group(self, tiles_group):
         self.speed_down_group = pygame.sprite.Group(
             *filter(lambda x: x.type == 'speed-down-block', tiles_group))
 
+    #  устанавливаем группу блоков, которые завершают игру
+    def set_finish_group(self, tiles_group):
+        self.finish_level_group = pygame.sprite.Group(*filter(lambda x: x.type == 'finish-block', tiles_group))
+
+    # мелодия смерти
     @staticmethod
     def play_die_song():
         pygame.mixer.music.load("data/music/damage.wav")

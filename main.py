@@ -12,7 +12,7 @@ clone_group = pygame.sprite.Group()  # группа клон-блоков
 
 screen = pygame.display.set_mode(SIZE)  # главный surface
 pygame.display.set_icon(ICON)
-pygame.display.set_caption('CodeRunner')
+pygame.display.set_caption(NAME)
 pygame.display.flip()  # отображаем начальный экран
 clock = pygame.time.Clock()  # контроль времени в pygame
 level = generate_level(load_level('level.txt'), player_group, tiles_group, all_sprites,
@@ -32,7 +32,7 @@ def terminate():
 def start_screen():
     fon = pygame.transform.scale(FON, (WIDTH, HEIGHT))  # фон заставки
     buttons_group = pygame.sprite.Group()
-    start_game_button = Button(buttons_group, 200, 250, button_images['start-game'])
+    start_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['start-game'])
     screen.blit(fon, (0, 0))  # грузим фон
     start_running = True  # флаг заставки
     while start_running:  # основной цикл заставки
@@ -98,7 +98,7 @@ def main_game():
 def die_screen():
     fon = pygame.transform.scale(DIE, (WIDTH, HEIGHT))
     buttons_group = pygame.sprite.Group()
-    new_game_button = Button(buttons_group, 200, 250, button_images['new-game'])
+    new_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['new-game'])
     screen.blit(fon, (0, 0))
     die_running = True
     while die_running:

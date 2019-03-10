@@ -26,6 +26,8 @@ pygame.mixer.music.load("data/music/background.mp3")
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1, 0.0)
 
+#  кол-во жизней
+life = LIFE_COUNT
 
 clock = pygame.time.Clock()  # контроль времени в pygame
 levels = get_levels()  # получили все уровни
@@ -66,6 +68,8 @@ def start_screen():
         pygame.display.flip()
         clock.tick(FPS)
 
+    global life
+    life = 3
     level = levels[level_index]  # получаем уровень из списка уровней
     main_game(level)
 
@@ -83,6 +87,11 @@ def main_game(level_name):
     # устанавливаем игроку размеры поля(нужно для корректной работы спрайта игрока)
     main_player.set_field_geometry(SIZE)
     main_player.reincarnation()  # восстанавливаем данные главного игрока
+
+    # Устанавливаем группу сердец
+    heart_group = pygame.sprite.Group()
+    for pos in range(670, 670 + 45 * life, 45):
+        Life(heart_group, pos, 10)
 
     for sprite in tiles_group:  # восстанавливаем все спрайты
         sprite.reincarnation()
@@ -128,12 +137,15 @@ def main_game(level_name):
         if not main_player.alive:
             state = 0
             break
+
         # очищаем список событий
         events.clear()
 
         # убираем стандартный курсор
         if pygame.mouse.get_focused():
             pygame.mouse.set_visible(0)
+
+        heart_group.draw(screen)
 
         pygame.display.flip()
         clock.tick(FPS)
@@ -145,11 +157,22 @@ def main_game(level_name):
 
 # заставка смерти, аналогично предидущим
 def die_screen(level):
+    global life
     state = 0  # какая кнопка была нажата
     fon = pygame.transform.scale(DIE, (WIDTH, HEIGHT))
     buttons_group = pygame.sprite.Group()  # группа кнопок
     new_game_button = Button(buttons_group, 200, 350, BUTTON_IMAGES['new-game'])  # кнопка начала игры
-    continue_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
+    if life >= 1:
+        continue_game_button = Button(buttons_group, 200, 250,
+                                      BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
+    else:
+        new_game_button.rect.y = 250
+
+    # Устанавливаем группу сердец
+    heart_group = pygame.sprite.Group()
+    for pos in range(670, 670 + 45 * life, 45):
+        Life(heart_group, pos, 10)
+
     die_running = True
     while die_running:
         for event in pygame.event.get():
@@ -159,9 +182,11 @@ def die_screen(level):
                 if new_game_button.rect.collidepoint(event.pos):
                     die_running = False
                     state = 1
-                if continue_game_button.rect.collidepoint(event.pos):
+                if life >= 1 and continue_game_button.rect.collidepoint(event.pos):
                     die_running = False
                     state = 0
+                    life -= 1
+
             elif event.type == pygame.MOUSEMOTION:
                 cursor.rect.x = event.pos[0]
                 cursor.rect.y = event.pos[1]
@@ -171,12 +196,15 @@ def die_screen(level):
 
         screen.blit(fon, (0, 0))
 
-        buttons_group.draw(screen)
+        buttons_group.draw(screen)  # отрисовываем кнопки
 
         # убираем стандартный курсор
         if pygame.mouse.get_focused():
             cursor_group.draw(screen)
             pygame.mouse.set_visible(0)
+
+        heart_group.draw(screen)  # отрисовываем группу сердец
+
         pygame.display.flip()
         clock.tick(FPS)
     if not state:

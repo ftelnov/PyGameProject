@@ -13,7 +13,11 @@ FINISH_GAME = load_image('fons/finish-game-fon.png')
 FON_WITHOUT_BUTTONS = load_image('fons/fon-without-buttons.png')  # фон без кнопок для самой игры
 ICON = load_image('icons/icon.png')  # иконка приложения
 NAME = 'CodeRunner'  # имя приложения
-CURSOR = load_image('cursor/cursor.png')
+CURSOR = load_image('cursor/cursor.png')  # изображение курсора
+GRAVITY = 9  # гравитация
+DEATH_TEXT = load_image('text/life.png')  # текст "DEATH"
+HEART_IMAGE = load_image('blocks/heart.png')  # изображение сердечка
+LIFE_COUNT = 3  # кол-во жизней
 
 # размеры блоков
 TILE_WIDTH = TILE_HEIGHT = 50

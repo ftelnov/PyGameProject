@@ -1,5 +1,6 @@
 from Constants import *
 import pygame
+import random
 
 
 # функция проверяет, принадлежит ли блок тому, на котором можно стоять, или "warning block group"
@@ -102,6 +103,13 @@ class PlayerCloneUnused(pygame.sprite.Sprite):
         self.type = 'player-clone'
 
 
+class Life(pygame.sprite.Sprite):
+    def __init__(self, group, x, y):
+        super().__init__(group)
+        self.image = HEART_IMAGE
+        self.rect = self.image.get_rect().move(x, y)
+
+
 # Класс игрока
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_group, all_sprites, pos_x, pos_y, maximum_height=-1):
@@ -126,7 +134,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5  # Константная скорость перемещения(влево/вправо)
 
         self.jumpSpeed = 18  # Высота прыжка
-        self.fallSpeed = 9  # Скорость паденя
+        self.fallSpeed = GRAVITY  # Скорость паденя
         self.stateOfJump = 0  # Фазы прыжка
         self.stateOfWalkLeft = 0  # Фазы хотьбы влево
         self.stateOfWalkRight = 0  # Фазы хотьбы вправо

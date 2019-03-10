@@ -54,6 +54,11 @@ BUTTON_IMAGES = {
     'continue-game': load_image('buttons/continue_game_button.png'),
 }
 
+SONG_IMAGES = {
+    True: pygame.transform.scale(load_image('blocks/song-on.png'), (35, 35)),
+    False: pygame.transform.scale(load_image('blocks/song-off.png'), (35, 35))
+}
+
 # размеры поля
 SIZE = WIDTH, HEIGHT = 812, 469
 

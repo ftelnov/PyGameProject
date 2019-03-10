@@ -29,6 +29,9 @@ pygame.mixer.music.play(-1, 0.0)
 #  кол-во жизней
 life = LIFE_COUNT
 
+#  флаг проигрывания музыки
+song = True
+
 clock = pygame.time.Clock()  # контроль времени в pygame
 levels = get_levels()  # получили все уровни
 level_index = 0  # переменная, показывающая, на каком уровне мы сейчас находимся
@@ -42,11 +45,13 @@ def terminate():
 
 # начальная заставка
 def start_screen():
-    global level_index
-    level_index = 0
+    global level_index, song
+    level_index = 0  # текущий уровень
     fon = pygame.transform.scale(FON, (WIDTH, HEIGHT))  # фон заставки
     buttons_group = pygame.sprite.Group()
     start_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['start-game'])
+
+    song_button = SONG_IMAGES[song]
 
     start_running = True  # флаг заставки
 
@@ -57,10 +62,20 @@ def start_screen():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if start_game_button.rect.collidepoint(event.pos):
                     start_running = False
+                if song_button.get_rect().collidepoint(event.pos):
+                    song = not song
+                    if song:
+                        pygame.mixer.music.play(-1, 0.0)
+                    else:
+                        pygame.mixer.music.stop()
+
             elif event.type == pygame.MOUSEMOTION:
                 cursor.rect.x = event.pos[0]
                 cursor.rect.y = event.pos[1]
+
+        song_button = SONG_IMAGES[song]
         screen.blit(fon, (0, 0))  # грузим фон
+        screen.blit(song_button, (0, 0))
         buttons_group.draw(screen)
         if pygame.mouse.get_focused():
             cursor_group.draw(screen)
@@ -90,7 +105,7 @@ def main_game(level_name):
 
     # Устанавливаем группу сердец
     heart_group = pygame.sprite.Group()
-    for pos in range(670, 670 + 45 * life, 45):
+    for pos in range(800 - 45 * life, 800, 45):
         Life(heart_group, pos, 10)
 
     for sprite in tiles_group:  # восстанавливаем все спрайты
@@ -112,6 +127,7 @@ def main_game(level_name):
             elif event.type == pygame.MOUSEMOTION:
                 cursor.rect.x = event.pos[0]
                 cursor.rect.y = event.pos[1]
+
         screen.blit(FON_WITHOUT_BUTTONS, (0, 0))
 
         # обновляем положение камеры и всех спрайтов

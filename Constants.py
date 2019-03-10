@@ -13,6 +13,7 @@ FINISH_GAME = load_image('fons/finish-game-fon.png')
 FON_WITHOUT_BUTTONS = load_image('fons/fon-without-buttons.png')  # фон без кнопок для самой игры
 ICON = load_image('icons/icon.png')  # иконка приложения
 NAME = 'CodeRunner'  # имя приложения
+CURSOR = load_image('cursor/cursor.png')
 
 # размеры блоков
 TILE_WIDTH = TILE_HEIGHT = 50

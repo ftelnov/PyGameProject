@@ -10,11 +10,23 @@ all_sprites = pygame.sprite.Group()  # все спрайты
 tiles_group = pygame.sprite.Group()  # препятсвия
 player_group = pygame.sprite.Group()  # группа игрока
 clone_group = pygame.sprite.Group()  # группа клон-блоков
+cursor_group = pygame.sprite.Group()  # группа курсора
 
 screen = pygame.display.set_mode(SIZE)  # главный surface
 pygame.display.set_icon(ICON)  # устанавливаем иконку
 pygame.display.set_caption(NAME)  # устанавливаем имя
 pygame.display.flip()  # отображаем начальный экран
+cursor = pygame.sprite.Sprite()  # изменяем курсор
+cursor.image = CURSOR  # устанавливаем ему изображение
+cursor.rect = cursor.image.get_rect()  # подгоняем размер
+cursor_group.add(cursor)  # добавляем в группу всех спрайтов
+
+#  грузим фоновую музыку
+pygame.mixer.music.load("data/music/background.mp3")
+pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.play(-1, 0.0)
+
+
 clock = pygame.time.Clock()  # контроль времени в pygame
 levels = get_levels()  # получили все уровни
 level_index = 0  # переменная, показывающая, на каком уровне мы сейчас находимся
@@ -33,7 +45,7 @@ def start_screen():
     fon = pygame.transform.scale(FON, (WIDTH, HEIGHT))  # фон заставки
     buttons_group = pygame.sprite.Group()
     start_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['start-game'])
-    screen.blit(fon, (0, 0))  # грузим фон
+
     start_running = True  # флаг заставки
 
     while start_running:  # основной цикл заставки
@@ -43,7 +55,14 @@ def start_screen():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if start_game_button.rect.collidepoint(event.pos):
                     start_running = False
+            elif event.type == pygame.MOUSEMOTION:
+                cursor.rect.x = event.pos[0]
+                cursor.rect.y = event.pos[1]
+        screen.blit(fon, (0, 0))  # грузим фон
         buttons_group.draw(screen)
+        if pygame.mouse.get_focused():
+            cursor_group.draw(screen)
+            pygame.mouse.set_visible(0)
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -75,8 +94,15 @@ def main_game(level_name):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+
+            elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                if event.key == 27:
+                    terminate()
                 events.append(event)
+
+            elif event.type == pygame.MOUSEMOTION:
+                cursor.rect.x = event.pos[0]
+                cursor.rect.y = event.pos[1]
         screen.blit(FON_WITHOUT_BUTTONS, (0, 0))
 
         # обновляем положение камеры и всех спрайтов
@@ -104,6 +130,11 @@ def main_game(level_name):
             break
         # очищаем список событий
         events.clear()
+
+        # убираем стандартный курсор
+        if pygame.mouse.get_focused():
+            pygame.mouse.set_visible(0)
+
         pygame.display.flip()
         clock.tick(FPS)
     if level_index > len(levels) - 1:
@@ -119,7 +150,6 @@ def die_screen(level):
     buttons_group = pygame.sprite.Group()  # группа кнопок
     new_game_button = Button(buttons_group, 200, 350, BUTTON_IMAGES['new-game'])  # кнопка начала игры
     continue_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
-    screen.blit(fon, (0, 0))
     die_running = True
     while die_running:
         for event in pygame.event.get():
@@ -132,7 +162,21 @@ def die_screen(level):
                 if continue_game_button.rect.collidepoint(event.pos):
                     die_running = False
                     state = 0
+            elif event.type == pygame.MOUSEMOTION:
+                cursor.rect.x = event.pos[0]
+                cursor.rect.y = event.pos[1]
+
+            elif event.type == pygame.KEYDOWN and event.key == 27:
+                terminate()
+
+        screen.blit(fon, (0, 0))
+
         buttons_group.draw(screen)
+
+        # убираем стандартный курсор
+        if pygame.mouse.get_focused():
+            cursor_group.draw(screen)
+            pygame.mouse.set_visible(0)
         pygame.display.flip()
         clock.tick(FPS)
     if not state:
@@ -146,7 +190,6 @@ def finish_game_screen():
     fon = pygame.transform.scale(FINISH_GAME, (WIDTH, HEIGHT))  # грузим фон
     buttons_group = pygame.sprite.Group()  # все кнопки
     github_button = Button(buttons_group, 415, 395, BUTTON_IMAGES['github'])  # гитхаб кнопка
-    screen.blit(fon, (0, 0))
     finish_game = True  # флаг текущего фона
     while finish_game:
         for event in pygame.event.get():
@@ -159,7 +202,18 @@ def finish_game_screen():
                 finish_game = False
                 terminate()
 
+            elif event.type == pygame.MOUSEMOTION:
+                cursor.rect.x = event.pos[0]
+                cursor.rect.y = event.pos[1]
+        screen.blit(fon, (0, 0))
+
         buttons_group.draw(screen)
+
+        # убираем стандартный курсор
+        if pygame.mouse.get_focused():
+            cursor_group.draw(screen)
+            pygame.mouse.set_visible(0)
+
         pygame.display.flip()
         clock.tick(FPS)
     start_screen()

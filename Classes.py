@@ -182,7 +182,6 @@ class Player(pygame.sprite.Sprite):
         #  если пересекаемся с опасным блоком
         if pygame.sprite.spritecollide(self, self.dangerous_group, False):
             self.alive = False  # убиваем персонажа
-            Player.play_die_song()  # отыгрываем мелодию смерти
 
         # Проверяем, на земле ли персонаж
         if self.onEarth:
@@ -273,7 +272,6 @@ class Player(pygame.sprite.Sprite):
                 self.image = PLAYER_IMAGES['stay-left']
         if self.maximumHeight < 0:
             self.alive = 0
-            Player.play_die_song()
         events.clear()
 
     #  узнаем конечную ширину и высоту поля
@@ -318,9 +316,3 @@ class Player(pygame.sprite.Sprite):
         while not pygame.sprite.spritecollide(self, self.warning_group, False):
             self.rect.y += 1
         self.rect.y -= 1
-
-    # мелодия смерти
-    @staticmethod
-    def play_die_song():
-        pygame.mixer.music.load("data/music/damage.wav")
-        pygame.mixer.music.play()

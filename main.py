@@ -117,8 +117,8 @@ def die_screen(level):
     state = 0  # какая кнопка была нажата
     fon = pygame.transform.scale(DIE, (WIDTH, HEIGHT))
     buttons_group = pygame.sprite.Group()  # группа кнопок
-    new_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['new-game'])  # кнопка начала игры
-    continue_game_button = Button(buttons_group, 200, 350, BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
+    new_game_button = Button(buttons_group, 200, 350, BUTTON_IMAGES['new-game'])  # кнопка начала игры
+    continue_game_button = Button(buttons_group, 200, 250, BUTTON_IMAGES['continue-game'])  # кнопка продолжения игры
     screen.blit(fon, (0, 0))
     die_running = True
     while die_running:

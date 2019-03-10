@@ -72,12 +72,12 @@ class CloneTile(Tile):
     def update(self, main_player, all_sprites):
         if self.flag:
             return
-        main_player.rect.y += 1
+        main_player.rect.y += 9
         if pygame.sprite.collide_rect(self, main_player):
             self.flag = 1
             # создаем клона персонажа
-            PlayerCloneUnused(all_sprites, main_player.rect.x, main_player.rect.y - 1, main_player.image)
-        main_player.rect.y -= 1
+            PlayerCloneUnused(all_sprites, main_player.rect.x, main_player.rect.y - 9, main_player.image)
+        main_player.rect.y -= 9
 
     # возраждаем персонажа
     def reincarnation(self):
@@ -178,6 +178,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.fallSpeed  # если мы стоим на блоке, возвращаемся в исходное положение
             self.maximumHeight += self.fallSpeed  # также приводим в обратное положение максимальную высоту
             self.onEarth = True
+            self.trace_to_block()
         #  если пересекаемся с опасным блоком
         if pygame.sprite.spritecollide(self, self.dangerous_group, False):
             self.alive = False  # убиваем персонажа
@@ -291,8 +292,8 @@ class Player(pygame.sprite.Sprite):
 
     #  устанавливаем максимальную высоту, которая является смертельной для игрока
     def set_maximum_height(self, height):
-        self.maximumHeight = height
-        self.safeMaximumHeight = height
+        self.maximumHeight = height + 50
+        self.safeMaximumHeight = height + 50
 
     #  устанавливаем группу блоков, на которых можно высоко выпрыгнуть
     def set_jump_group(self, tiles_group):
@@ -311,6 +312,12 @@ class Player(pygame.sprite.Sprite):
     #  устанавливаем группу блоков, которые завершают игру
     def set_finish_group(self, tiles_group):
         self.finish_level_group = pygame.sprite.Group(*filter(lambda x: x.type == 'finish-block', tiles_group))
+
+    #  опускаем персонажа до ближайшего блока
+    def trace_to_block(self):
+        while not pygame.sprite.spritecollide(self, self.warning_group, False):
+            self.rect.y += 1
+        self.rect.y -= 1
 
     # мелодия смерти
     @staticmethod

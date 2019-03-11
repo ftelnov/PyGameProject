@@ -41,7 +41,9 @@ level_index = 0  # переменная, показывающая, на како
 def terminate():
     pygame.quit()
     sys.exit()
-
+   
+if not levels:
+    terminate()
 
 # начальная заставка
 def start_screen():
